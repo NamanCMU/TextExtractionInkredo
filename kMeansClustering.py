@@ -18,7 +18,6 @@ allFiles = []
 for file in os.listdir(folderName):
 	img = cv2.imread(os.path.join(folderName,file), 1)
 	if img is not None:
-		print("File: ", file)
 		allFiles.append(file)
 		img2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
 		allImages.append(img2)
@@ -28,7 +27,7 @@ print("Total Images: ", len(allImages))
 count = 0
 for inputImg in allImages:
 
-	print("Processing Image ", count + 1);
+	print("Processing Image ", allFiles[0]);
 	imgOne = np.array(inputImg)
 	
 	# Gaussian Blur and Otsu Thresholding
@@ -44,7 +43,7 @@ for inputImg in allImages:
 
 	finalVec = np.hstack((imgOneFlat, Coord))
 	finalVec = np.float32(finalVec)
-	print(finalVec.shape)
+	print("Final Flattened vector shape: ", finalVec.shape)
 
 	# using K-means clustering
 	criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 0.1)
