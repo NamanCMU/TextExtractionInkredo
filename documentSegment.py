@@ -1,3 +1,5 @@
+# To run in the terminal : python3 documentSegment.py Set1 (Folder which contains images)
+
 import numpy as np
 import cv2
 import sys
