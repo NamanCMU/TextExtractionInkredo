@@ -62,5 +62,5 @@ for inputImg in allImages:
 	fileName = name + 'cropped.jpg'
 
 	cv2.imwrite(os.path.join(folderName , fileName), finalImg)
-	i = i + 1
+	i = i + 1 # To keep track of the file
 
