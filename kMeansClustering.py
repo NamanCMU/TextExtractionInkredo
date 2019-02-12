@@ -44,10 +44,11 @@ for inputImg in allImages:
 
 	finalVec = np.hstack((imgOneFlat, Coord))
 	finalVec = np.float32(finalVec)
+	print(finalVec.shape)
 
 	# using K-means clustering
-	criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10,1)
-	compactness,labels,centers = cv2.kmeans(finalVec,3,None,criteria,10,cv2.KMEANS_RANDOM_CENTERS)
+	criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 0.1)
+	compactness,labels,centers = cv2.kmeans(finalVec, 3, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
 
 	# Three clusters
 	first = finalVec[labels.flatten() == 0]
@@ -83,7 +84,7 @@ for inputImg in allImages:
 	# plt.scatter(first[:,1],first[:,0], c = 'g')
 	# plt.scatter(second[:,1],second[:,0], c = 'b')
 	# plt.scatter(third[:,1],third[:,0], c = 'k')
-	# plt.scatter(centers[:,1],centers[:,0],s = 50,c = 'r', marker = 's')
+	# plt.scatter(centers[:,1],centers[:,0],s = 50, marker = '8')
 	# plt.xlabel('Coordinate'),plt.ylabel('GrayValue')
 	# plt.show()
 	
