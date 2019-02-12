@@ -12,35 +12,53 @@ if(len(sys.argv) != 2):
 # Loading images
 allImages = []
 folderName = sys.argv[1]
+allFiles = []
 for file in os.listdir(folderName):
 	img = cv2.imread(os.path.join(folderName,file), 1)
 	if img is not None:
 		print("File: ", file)
+		allFiles.append(file)
 		img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) 
 		allImages.append(img)
 
 print("Total Images: ", len(allImages))	
 
-imgBlur = cv2.GaussianBlur(allImages[0],(5,5),0)
-ret, imgThresh = cv2.threshold(imgBlur,0,255,cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-print("Shape of the Image: ", allImages[0].shape)
+# Finding the four corner points of the cropped document
+i = 0
+for inputImg in allImages:
+	imgBlur = cv2.GaussianBlur(inputImg,(5,5),0)
+	ret, imgThresh = cv2.threshold(imgBlur,0,255,cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+	print("Shape of the Image: ", inputImg.shape)
 
-# Trying to flood fill the document to segment it - Not working
-h, w = imgThresh.shape[:2]
-mask = np.zeros((h+2, w+2), np.uint8)
+	for r in range(imgThresh.shape[0]):
+		if(imgThresh[r][0] == 255):
+			point1 = (r,0)
+			break
 
-for i in range(imgThresh.shape[1]):
-	if(imgThresh[0][i] == 255):
-		cv2.floodFill(imgThresh, mask, (i,0), 255)
-	if(imgThresh[imgThresh.shape[0] - 1][i] == 255):
-		cv2.floodFill(imgThresh, mask, (i,(imgThresh.shape[0] - 1)), 255)
+	for r in range(imgThresh.shape[0]):
+		if(imgThresh[r][imgThresh.shape[1] - 1] == 255):
+			point2 = (r,imgThresh.shape[1] - 1)
+			break
 
-for i in range(imgThresh.shape[0]):
-	if(imgThresh[i][0] == 255):
-		cv2.floodFill(imgThresh, mask, (0,i), 255)
-	if(imgThresh[i][imgThresh.shape[1] - 1] == 255):
-		cv2.floodFill(imgThresh, mask, ((imgThresh.shape[1] - 1),0), 255)
+	for r in range(imgThresh.shape[0] - 1, 0, -1):
+		if(imgThresh[r][0] == 255):
+			point3 = (r,0)
+			break
 
-plt.subplot(121), plt.imshow(imgThresh, 'gray')
-plt.show()
+	for r in range(imgThresh.shape[0] - 1, 0, -1):
+		if(imgThresh[r][imgThresh.shape[1] - 1] == 255):
+			point4 = (r,imgThresh.shape[1] - 1)
+			break
+
+	ylow = min(point1[0], point2[0])
+	yhigh = max(point3[0], point4[0])
+
+	finalImg = inputImg[ ylow: yhigh, 0 : inputImg.shape[0]] # Final cropped image
+
+	# Saving the image
+	name, ext = os.path.splitext(allFiles[i])
+	fileName = name + 'cropped.jpg'
+
+	cv2.imwrite(os.path.join(folderName , fileName), finalImg)
+	i = i + 1
 
